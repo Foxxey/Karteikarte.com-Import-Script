@@ -1,3 +1,8 @@
+# Requirements
+
+- Node.js: https://nodejs.org/de/download
+- Chrome: https://www.google.com/intl/en_en/chrome/
+
 # Installation
 
 ```
