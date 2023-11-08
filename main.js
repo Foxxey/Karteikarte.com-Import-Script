@@ -22,7 +22,7 @@ if (!username || !password || !lessonId || !inputFile) {
 let outputQueue = [];
 
 fs.createReadStream(inputFile)
-    .pipe(csv())
+    .pipe(csv({ headers: false }))
     .on('data', (row) => {
         const flippedRow = Object.values(row).reverse();
         var cleanedRow = [];
@@ -63,6 +63,7 @@ fs.createReadStream(inputFile)
         var currentUrl = await driver.getCurrentUrl();
         if (currentUrl === 'https://www.karteikarte.com/login') {
             // Perform login steps using JavaScript
+            await driver.executeScript(`document.querySelector("[mode='primary']")?.click()`);
             await driver.executeScript(`document.getElementById('form_username').value = '${username}';`);
             await driver.executeScript(`document.getElementById('form_password').value = '${password}';`);
             await driver.executeScript(`document.querySelector('.submit').click();`);
