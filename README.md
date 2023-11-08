@@ -24,7 +24,7 @@ tinder,"Zunder, Pulver"
 The first column represents the front of the index card and everything after that – the back.
 If you want to put commas into the back use apostrophes as shown.
 Excel is recommended and supports .csv output (UTF-8 encoding recommended for non-ASCII characters).
-Here is the same example in Excel: https://prnt.sc/qTtURLLMjGfI.
+Here is the same example in Excel: https://prnt.sc/_izPkpstjfi0.
 
 After creating a lesson in karteikarte.com you can find the LESSON_ID from the URL: https://prnt.sc/NnM-XXQHwX6o.
 
