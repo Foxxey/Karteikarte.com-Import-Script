@@ -5,51 +5,50 @@ const {
 const fs = require('fs');
 const csv = require('csv-parser');
 
+// Array to store the indices of required command line arguments
+const requiredArgs = [];
+const i = (a) => {a = args.indexOf(a); requiredArgs.push(a); return a;};
 // Parse command line arguments
 const args = process.argv.slice(2);
-const username = args[args.indexOf('-u') + 1];
-const password = args[args.indexOf('-p') + 1];
-const inputFile = args[args.indexOf('-i') + 1];
-const lessonId = args[args.indexOf('-id') + 1];
-const multipleTranslations = args.indexOf('-m');
+const username = args[i('-u') + 1];
+const password = args[i('-p') + 1];
+const inputFile = args[i('-i') + 1];
+const lessonId = args[i('-id') + 1];
+const multipleEntries = args.indexOf('-m') != -1;
 
 // Validate required arguments
-if (!username || !password || !lessonId || !inputFile) {
+if (Math.min(...requiredArgs) == -1) {
     console.log('Missing required arguments!');
     return;
 }
 
 let outputQueue = [];
 
+// Read CSV file and process data
 fs.createReadStream(inputFile)
     .pipe(csv({ headers: false }))
     .on('data', (row) => {
-        const flippedRow = Object.values(row).reverse();
-        var cleanedRow = [];
-        if (multipleTranslations) {
-            cleanedRow = flippedRow.map((value, index) => {
-                if (index === 1 && value.includes(',')) {
-                    return value.split(',').map((item) => item.trim());
-                }
-                return value.trim();
-            });
-
-            if (Array.isArray(cleanedRow[1])) {
-                cleanedRow[1].forEach((value) => {
-                    outputQueue.push([cleanedRow[0], value]);
+        // Extract the first two columns from the CSV row
+        row = Object.values(row).slice(0, 2);
+        let obj = {'0':[], '1':[]};
+            if (multipleEntries) {
+                // Split back & fronts content by comma and trim whitespace
+                row.forEach((e, i) => {
+                    e.split(/\s*,\s*/).forEach(item => {
+                        obj[i].push(item.trim());
+                    });
                 });
-            } else {
-                outputQueue.push(cleanedRow);
-            }
-        } else {
-            cleanedRow = flippedRow.map((value) => value.trim());
-            outputQueue.push(cleanedRow);
-        }
+                // Generate all possible pairs of entries and add to the outputQueue
+                obj[0].forEach(back => obj[1].forEach(front => outputQueue.push([back, front])))
+            } else 
+            // If multiple entries are not enabled, push the row after trimming content
+            outputQueue.push(row.map(e => e.trim()));
     })
     .on('end', () => {
-        console.log('CSV file processing complete');
+        console.log('\nCSV file processing complete:\n');
+        console.log(outputQueue)
     });
-
+    
 (async function () {
     // Set up Selenium WebDriver
     const driver = await new Builder().forBrowser('chrome').build();
@@ -74,7 +73,7 @@ fs.createReadStream(inputFile)
             await driver.quit();
         }
 
-        while (outputQueue != []) {
+        while (outputQueue.length != 0) {
             const row = outputQueue.shift();
 
             // Populate form fields with values from the response array
