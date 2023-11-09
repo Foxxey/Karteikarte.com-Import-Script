@@ -36,7 +36,7 @@ node main.js -u USERNAME -p PASSWORD -id LESSON_ID -i INPUT_FILE.csv
 
 ```csv
 tinder,"Zunder,Pulver"
-"to give, to hand","übergeben"
+"to give,to hand","übergeben"
 "melodious,pleasant-sounding","melodisch,wohlklingend"
 ```
 
